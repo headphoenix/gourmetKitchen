@@ -1,6 +1,8 @@
 import PC from "../img/pc2.png"
 import styled from "styled-components";
 import { mobile } from "../utils/responsive";
+import { BiMinus, BiPlus } from "react-icons/bi";
+import { motion } from "framer-motion";
 
 const Container = styled.div``;
 
@@ -42,7 +44,7 @@ const Price = styled.span`
 
 const FilterContainer = styled.div`
   width: 50%;
-  margin: 30px 0px;
+  margin: 30px 0px 0px 0px;
   display: flex;
   justify-content: space-between;
   ${mobile({ width: "100%" })}
@@ -149,9 +151,23 @@ const Product = () => {
           </FilterContainer>
           <AddContainer>
             <AmountContainer>
-              <Button>Subtract</Button>
-              <Amount>1</Amount>
-              <Button>Add</Button>
+            <div className="group flex items-center gap-2 ml-auto cursor-pointer">
+        <motion.div
+          whileTap={{ scale: 0.75 }}
+        >
+          <BiMinus className="text-black-50 h-96" />
+        </motion.div>
+
+        <p className="w-5 h-5 rounded-sm bg-cartBg text-gray-50 flex items-center justify-center">
+          1
+        </p>
+
+        <motion.div
+          whileTap={{ scale: 0.75 }}
+        >
+          <BiPlus className="text-black-50 h-96" />
+        </motion.div>
+      </div>
             </AmountContainer>
             <button
           type="button"

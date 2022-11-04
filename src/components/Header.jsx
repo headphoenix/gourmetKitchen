@@ -11,13 +11,18 @@ import { Link } from "react-router-dom";
 import { useStateValue } from "../context/StateProvider";
 import { actionType } from "../context/reducer";
 
+import { HiOutlineMenuAlt3 } from "react-icons/hi";
+
 const Header = () => {
   const firebaseAuth = getAuth(app);
   const provider = new GoogleAuthProvider();
 
-  const [{ user, cartShow, cartItems }, dispatch] = useStateValue();
+  const [{ user, cartShow, cartItems, menuShow }, dispatch] = useStateValue();
 
   const [isMenu, setIsMenu] = useState(false);
+
+  const [logoutMenu, setLogoutMenu] = useState(false);
+
 
   const login = async () => {
     if (!user) {
@@ -29,13 +34,26 @@ const Header = () => {
         user: providerData[0],
       });
       localStorage.setItem("user", JSON.stringify(providerData[0]));
+      
     } else {
-      setIsMenu(!isMenu);
+      setLogoutMenu(!logoutMenu);
     }
   };
 
+  const toggleMenu = () => {
+    setIsMenu(!isMenu)
+    dispatch({
+      type: actionType.SET_MENU,
+      menuShow: !isMenu,
+    });
+  }
+
+  const hideMenu = () => {
+    setIsMenu(false)
+  }
+
   const logout = () => {
-    setIsMenu(false);
+    setLogoutMenu(false);
     localStorage.clear();
 
     dispatch({
@@ -98,12 +116,12 @@ const Header = () => {
           <div className="relative">
             <motion.img
               whileTap={{ scale: 0.6 }}
-              src={user ? user.displayName : Avatar}
+              src={user ? user.photoURL : Avatar}
               className="w-10 min-w-[40px] h-10 min-h-[40px] drop-shadow-xl cursor-pointer rounded-full"
-              alt="userprofile"
+              alt={user ? user.displayName : "userprofile"}
               onClick={login}
             />
-            {isMenu && (
+            {logoutMenu && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.6 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -151,18 +169,39 @@ const Header = () => {
 
         <Link to={"/"} className="flex items-center gap-2">
           <img src={Logo} className="w-8 object-cover" alt="logo" />
-          <p className="text-headingColor text-xl font-bold"> City</p>
+          <p className="text-headingColor text-xl font-bold"> Gourmet Kitchen</p>
         </Link>
 
-        <div className="relative">
+        <div className="relative flex">
+          <HiOutlineMenuAlt3 
+          className="w-10 min-w-[40px] h-5 min-h-[30px] drop-shadow-xl cursor-pointer rounded-full mr-1"
+          onClick={toggleMenu}
+          />
           <motion.img
             whileTap={{ scale: 0.6 }}
             src={user ? user.photoURL : Avatar}
-            className="w-10 min-w-[40px] h-10 min-h-[40px] drop-shadow-xl cursor-pointer rounded-full"
-            alt="userprofile"
+            className="w-10 min-w-[40px] h-10 min-h-[30px] drop-shadow-xl cursor-pointer rounded-full"
+            alt={user ? user.displayName : "userprofile"}
             onClick={login}
           />
-          {isMenu && (
+          {
+            logoutMenu && (
+              <motion.div
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.6 }}
+              className="w-40 bg-gray-50 shadow-xl rounded-lg flex flex-col absolute top-12 right-0"
+            >
+              <p
+                className="m-2 p-2 rounded-md shadow-md flex items-center justify-center bg-gray-200 gap-3 cursor-pointer hover:bg-gray-300 transition-all duration-100 ease-in-out text-textColor text-base"
+                onClick={logout}
+              >
+                Logout <MdLogout />
+              </p>
+            </motion.div>
+            )
+          }
+          {menuShow && (
             <motion.div
               initial={{ opacity: 0, scale: 0.6 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -200,16 +239,9 @@ const Header = () => {
                   className="text-base text-textColor hover:text-headingColor duration-100 transition-all ease-in-out cursor-pointer hover:bg-slate-100 px-4 py-2"
                   onClick={() => setIsMenu(false)}
                 >
-                  Service
+                  Orders
                 </li>
               </ul>
-
-              <p
-                className="m-2 p-2 rounded-md shadow-md flex items-center justify-center bg-gray-200 gap-3 cursor-pointer hover:bg-gray-300 transition-all duration-100 ease-in-out text-textColor text-base"
-                onClick={logout}
-              >
-                Logout <MdLogout />
-              </p>
             </motion.div>
           )}
         </div>
