@@ -12,7 +12,7 @@ import { firestore } from "../firebase.config";
 export const saveItem = async (data) => {
   await setDoc(doc(firestore, "foodItems", `${Date.now()}`), data, {
     merge: true,
-  });
+  }); 
 };
 
 // getall food items
@@ -23,3 +23,5 @@ export const getAllFoodItems = async () => {
 
   return items.docs.map((doc) => doc.data());
 };
+
+// delete food item

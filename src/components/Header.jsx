@@ -34,7 +34,7 @@ const Header = () => {
         user: providerData[0],
       });
       localStorage.setItem("user", JSON.stringify(providerData[0]));
-      
+
     } else {
       setLogoutMenu(!logoutMenu);
     }
@@ -95,8 +95,15 @@ const Header = () => {
               About Us
             </li>
             <li className="text-lg text-textColor hover:text-headingColor duration-100 transition-all ease-in-out cursor-pointer">
-              Service
+              Orders
             </li>
+            {user && user.email === "kofiamoodarko@gmail.com" && (
+              <Link to={"/admin/home"}>
+                <li className="text-lg text-textColor hover:text-headingColor duration-100 transition-all ease-in-out cursor-pointer">
+                  Admin
+                </li>
+              </Link>
+            )}
           </motion.ul>
 
           <div
@@ -173,9 +180,9 @@ const Header = () => {
         </Link>
 
         <div className="relative flex">
-          <HiOutlineMenuAlt3 
-          className="w-10 min-w-[40px] h-5 min-h-[30px] drop-shadow-xl cursor-pointer rounded-full mr-1"
-          onClick={toggleMenu}
+          <HiOutlineMenuAlt3
+            className="w-10 min-w-[40px] h-5 min-h-[30px] drop-shadow-xl cursor-pointer rounded-full mr-1"
+            onClick={toggleMenu}
           />
           <motion.img
             whileTap={{ scale: 0.6 }}
@@ -187,18 +194,18 @@ const Header = () => {
           {
             logoutMenu && (
               <motion.div
-              initial={{ opacity: 0, scale: 0.6 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.6 }}
-              className="w-40 bg-gray-50 shadow-xl rounded-lg flex flex-col absolute top-12 right-0"
-            >
-              <p
-                className="m-2 p-2 rounded-md shadow-md flex items-center justify-center bg-gray-200 gap-3 cursor-pointer hover:bg-gray-300 transition-all duration-100 ease-in-out text-textColor text-base"
-                onClick={logout}
+                initial={{ opacity: 0, scale: 0.6 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.6 }}
+                className="w-40 bg-gray-50 shadow-xl rounded-lg flex flex-col absolute top-12 right-0"
               >
-                Logout <MdLogout />
-              </p>
-            </motion.div>
+                <p
+                  className="m-2 p-2 rounded-md shadow-md flex items-center justify-center bg-gray-200 gap-3 cursor-pointer hover:bg-gray-300 transition-all duration-100 ease-in-out text-textColor text-base"
+                  onClick={logout}
+                >
+                  Logout <MdLogout />
+                </p>
+              </motion.div>
             )
           }
           {menuShow && (
@@ -241,6 +248,16 @@ const Header = () => {
                 >
                   Orders
                 </li>
+                {user && user.email === "kofiamoodarko@gmail.com" && (
+                  <Link to={"/admin/home"}>
+                    <li
+                      className="text-base text-textColor hover:text-headingColor duration-100 transition-all ease-in-out cursor-pointer hover:bg-slate-100 px-4 py-2"
+                      onClick={() => setIsMenu(false)}
+                    >
+                      Admin
+                    </li>
+                  </Link>
+                )}
               </ul>
             </motion.div>
           )}
