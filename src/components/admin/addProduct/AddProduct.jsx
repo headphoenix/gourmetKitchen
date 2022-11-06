@@ -2,6 +2,19 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 
 import {
+  collection,
+  doc,
+  getDocs,
+  orderBy,
+  query,
+  setDoc,
+  addDoc,
+  Timestamp,
+} from "firebase/firestore";
+
+import { toast } from "react-toastify";
+
+import {
   MdFastfood,
   MdCloudUpload,
   MdDelete,
@@ -16,22 +29,45 @@ import {
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
-import { storage } from "../../../firebase.config";
+import { firestore, storage } from "../../../firebase.config";
 import { getAllFoodItems, saveItem } from "../../../utils/firebaseFunctions";
 import { actionType } from "../../../context/reducer";
 import { useStateValue } from "../../../context/StateProvider";
 
+import { useNavigate, useParams } from "react-router-dom";
+
+const initialState = {
+  title: "",
+  imageAsset: null,
+  price: 0,
+  category: null,
+  calories: "",
+};
+
+
+
 const AddProduct = () => {
-  const [title, setTitle] = useState("");
-  const [calories, setCalories] = useState("");
-  const [price, setPrice] = useState("");
-  const [category, setCategory] = useState(null);
-  const [imageAsset, setImageAsset] = useState(null);
   const [fields, setFields] = useState(false);
   const [alertStatus, setAlertStatus] = useState("danger");
   const [msg, setMsg] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [{ foodItems }, dispatch] = useStateValue();
+  const [uploadProgress, setUploadProgress] = useState(0)
+
+  const { id } = useParams();
+
+  const products = foodItems;
+  //console.log(products)
+  
+  const productEdit = products?.find((item) => item.id === id);
+
+  const [product, setProduct] = useState(() => {
+    const newState = detectForm(id, { ...initialState}, productEdit);
+    //console.log(newState)
+    return newState;
+  });
+  
+  const { title, calories, imageAsset, price, category} = product
 
   const uploadImage = (e) => {
     setIsLoading(true);
@@ -57,7 +93,7 @@ const AddProduct = () => {
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setImageAsset(downloadURL);
+          setProduct({...product, imageAsset: downloadURL});
           setIsLoading(false);
           setFields(true);
           setMsg("Image uploaded successfully 😊");
@@ -74,7 +110,7 @@ const AddProduct = () => {
     setIsLoading(true);
     const deleteRef = ref(storage, imageAsset);
     deleteObject(deleteRef).then(() => {
-      setImageAsset(null);
+      setProduct({...product, imageAsset: null});
       setIsLoading(false);
       setFields(true);
       setMsg("Image deleted successfully 😊");
@@ -131,11 +167,7 @@ const AddProduct = () => {
   };
 
   const clearData = () => {
-    setTitle("");
-    setImageAsset(null);
-    setCalories("");
-    setPrice("");
-    setCategory("Select Category");
+    setProduct({ ...initialState});
   };
 
   const fetchData = async () => {
@@ -146,6 +178,71 @@ const AddProduct = () => {
       });
     });
   };
+
+
+  //console.log(id)
+
+  // const finalProduct = {
+  //   id: productEdit?.id,
+  //   calories: productEdit?.calories,
+  //   title: productEdit?.title,
+  //   price: productEdit?.price,
+  //   category: productEdit?.category,
+  //   imageAsset: productEdit?.imageURL,
+  //   qty: productEdit?.qty,
+  // }
+  // console.log(finalProduct);
+  //console.log(initialState)
+
+ 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setProduct({ ...product, [name]: value });
+  };
+    console.log(product)
+  //console.log(product)
+  const navigate = useNavigate();
+
+  function detectForm(id, f1, f2) {
+    if (id === "ADD") {
+      return f1;
+    }
+    return f2;
+  }
+
+  const editProduct = (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    if (product.imageURL !== productEdit.imageURL) {
+      const storageRef = ref(storage, productEdit.imageAsset);
+      deleteObject(storageRef);
+    }
+
+    try {
+      const data = {
+        title: title,
+        imageURL: imageAsset,
+        category: category,
+        calories: calories,
+        qty: 1,
+        price: price,
+      };
+      setDoc(doc(firestore, "foodItems", id), data, 
+      {
+        merge: true,
+      }
+      );
+      setIsLoading(false);
+      setMsg("Data Edit successfully 😊");
+      toast.success("Product Edited Successfully");
+      navigate("/admin/all-products");
+    } catch (error) {
+      setIsLoading(false);
+      toast.error(error.message);
+    }
+  };
+
 
   return (
     <div className="w-full min-h-screen flex items-center justify-center">
@@ -164,14 +261,15 @@ const AddProduct = () => {
             {msg}
           </motion.p>
         )}
-
+         <h2>{detectForm(id, "Add New Product", "Edit Product")}</h2>
         <div className="w-full py-2 border-b border-gray-300 flex items-center gap-2">
           <MdFastfood className="text-xl text-gray-700" />
           <input
             type="text"
             required
+            name="title"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => handleInputChange(e)}
             placeholder="Give me a title..."
             className="w-full h-full text-lg bg-transparent outline-none border-none placeholder:text-gray-400 text-textColor"
           />
@@ -179,7 +277,8 @@ const AddProduct = () => {
 
         <div className="w-full">
           <select
-            onChange={(e) => setCategory(e.target.value)}
+            name="category"
+            onChange={(e) => handleInputChange(e)}
             className="outline-none w-full text-base border-b-2 border-gray-200 p-2 rounded-md cursor-pointer"
           >
             <option value="other" className="bg-white">
@@ -250,7 +349,8 @@ const AddProduct = () => {
               type="text"
               required
               value={calories}
-              onChange={(e) => setCalories(e.target.value)}
+              name="calories"
+              onChange={(e) => handleInputChange(e)}
               placeholder="Calories"
               className="w-full h-full text-lg bg-transparent outline-none border-none placeholder:text-gray-400 text-textColor"
             />
@@ -262,7 +362,8 @@ const AddProduct = () => {
               type="text"
               required
               value={price}
-              onChange={(e) => setPrice(e.target.value)}
+              name="price"
+              onChange={(e) => handleInputChange(e)}
               placeholder="Price"
               className="w-full h-full text-lg bg-transparent outline-none border-none placeholder:text-gray-400 text-textColor"
             />
@@ -273,7 +374,7 @@ const AddProduct = () => {
           <button
             type="button"
             className="ml-0 md:ml-auto w-full md:w-auto border-none outline-none bg-emerald-500 px-12 py-2 rounded-lg text-lg text-white font-semibold"
-            onClick={saveDetails}
+            onClick={detectForm(id, saveDetails, editProduct)}
           >
             Save
           </button>

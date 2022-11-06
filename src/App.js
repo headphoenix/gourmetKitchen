@@ -5,6 +5,7 @@ import { CreateContainer, Header, MainContainer, Product, Cart, Footer, Admin } 
 import { useStateValue } from "./context/StateProvider";
 import { getAllFoodItems } from "./utils/firebaseFunctions";
 import { actionType } from "./context/reducer";
+import ProductDetails from "./pages/product/productDetails/productDetails";
 
 const App = () => {
   const [{ foodItems, menuShow, cartShow }, dispatch] = useStateValue();
@@ -22,10 +23,6 @@ const App = () => {
     dispatch({
       type: actionType.SET_MENU,
       menuShow: false,
-    });
-    dispatch({
-      type: actionType.SET_CART_SHOW,
-      cartShow: false,
     });
   }
 
@@ -45,6 +42,7 @@ const App = () => {
             <Route path="/product" element={<Product />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/admin/*" element={<Admin />}/>
+            <Route path="/product-details/:id" element={<ProductDetails />} />
           </Routes>
         </main>
         <Footer />
