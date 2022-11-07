@@ -8,7 +8,7 @@ import { useStateValue } from "../context/StateProvider";
 const MenuContainer = () => {
   const [filter, setFilter] = useState("chicken");
 
-  const [{ foodItems }, dispatch] = useStateValue();
+  const [{ foodItems }, dispatch] = useStateValue(JSON.parse(localStorage.getItem("cartItems")));
 
   return (
     <section className="w-full my-6" id="menu">

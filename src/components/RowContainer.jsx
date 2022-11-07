@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import NotFound from "../img/NotFound.svg";
 import { useStateValue } from "../context/StateProvider";
 import { actionType } from "../context/reducer";
-import { Link } from "react-router-dom";
 
 const RowContainer = ({ flag, data, scrollValue }) => {
   const rowContainer = useRef();
@@ -29,7 +28,27 @@ const RowContainer = ({ flag, data, scrollValue }) => {
     addtocart();
   }, [items]);
 
- 
+  const cartLogic = (cartItems, item) => {
+    
+    console.log(cartItems);
+    const existingCartItem = cartItems.find(
+      (cartItem) => cartItem.id === item.id
+    );
+
+    if (existingCartItem) {
+      return cartItems.map((cartItem) => {
+        if (cartItem.id === item.id) {
+          setItems([{ ...cartItem, qty: cartItem.qty + 1 }])
+        } else {
+          setItems([cartItems, ...item])
+        }
+      }
+      );
+    }
+  
+     return setItems([...cartItems, item]);
+    
+  };
 
   return (
     <div
@@ -51,18 +70,16 @@ const RowContainer = ({ flag, data, scrollValue }) => {
                 className="w-40 h-40 -mt-8 drop-shadow-2xl"
                 whileHover={{ scale: 1.2 }}
               >
-              <Link to={`/product-details/${item?.id}`}>
                 <img
                   src={item?.imageURL}
                   alt=""
                   className="w-full h-full object-contain"
                 />
-                </Link> 
               </motion.div>
               <motion.div
                 whileTap={{ scale: 0.75 }}
                 className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center cursor-pointer hover:shadow-md -mt-8"
-                onClick={() => setItems([...cartItems, item])}
+                onClick={() => cartLogic(cartItems, item)}
               >
                 <MdShoppingBasket className="text-white" />
               </motion.div>

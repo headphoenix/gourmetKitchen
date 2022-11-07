@@ -1,11 +1,13 @@
 import React, { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
-import { CreateContainer, Header, MainContainer, Product, Cart, Footer, Admin } from "./components";
+import { CreateContainer, Header, MainContainer, Product, Footer, Admin } from "./components";
 import { useStateValue } from "./context/StateProvider";
 import { getAllFoodItems } from "./utils/firebaseFunctions";
 import { actionType } from "./context/reducer";
 import ProductDetails from "./pages/product/productDetails/productDetails";
+import Cart from "./pages/cart/Cart";
+
 
 const App = () => {
   const [{ foodItems, menuShow, cartShow }, dispatch] = useStateValue();
@@ -43,6 +45,7 @@ const App = () => {
             <Route path="/cart" element={<Cart />} />
             <Route path="/admin/*" element={<Admin />}/>
             <Route path="/product-details/:id" element={<ProductDetails />} />
+            <Route path="/cart" element={<Cart />} />
           </Routes>
         </main>
         <Footer />

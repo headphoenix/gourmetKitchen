@@ -8,6 +8,8 @@ import { actionType } from "../context/reducer";
 import EmptyCart from "../img/emptyCart.svg";
 import CartItem from "./CartItem";
 
+import { Link } from "react-router-dom";
+
 import { PaystackButton } from "react-paystack";
 
 const CartContainer = () => {
@@ -137,6 +139,7 @@ const CartContainer = () => {
             </div>
 
             {user ? (
+              <Link to="/cart">
               <motion.button
                 whileTap={{ scale: 0.8 }}
                 type="button"
@@ -144,6 +147,7 @@ const CartContainer = () => {
               >
                 Check Out
               </motion.button>
+              </Link>
             ) : (
               <motion.button
                 whileTap={{ scale: 0.8 }}
@@ -168,3 +172,5 @@ const CartContainer = () => {
 };
 
 export default CartContainer;
+
+

@@ -7,7 +7,7 @@ import { app } from "../firebase.config";
 
 import Logo from "../img/logo.png";
 import Avatar from "../img/avatar.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useStateValue } from "../context/StateProvider";
 import { actionType } from "../context/reducer";
 
@@ -22,6 +22,8 @@ const Header = () => {
   const [isMenu, setIsMenu] = useState(false);
 
   const [logoutMenu, setLogoutMenu] = useState(false);
+  
+  const navigate = useNavigate()
 
 
   const login = async () => {
@@ -54,12 +56,14 @@ const Header = () => {
 
   const logout = () => {
     setLogoutMenu(false);
+    // navigate('/')
     localStorage.clear();
 
     dispatch({
       type: actionType.SET_USER,
       user: null,
     });
+    
   };
 
   const showCart = () => {
