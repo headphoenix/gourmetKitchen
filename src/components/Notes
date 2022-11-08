@@ -1,2 +1,60 @@
 
 // const [items, setItems] = useState(JSON.parse(localStorage.getItem("cartItems")));
+
+
+{/* <div className={`container ${styles.product}`}>
+        <h2>Product Details</h2>
+        <div>
+          <Link to="/#products">&larr; Back To Products</Link>
+        </div>
+        {product === null ? (
+          <img src={spinnerImg} alt="Loading" style={{ width: "50px" }} />
+        ) : (
+          <>
+            <div className={styles.details}>
+              <div className={styles.img}>
+                <img src={product.imageURL} alt={product.title} />
+              </div>
+              <div className={styles.content}>
+                <h3>{product.title}</h3>
+                <p className={styles.price}>{`$${product.price}`}</p>
+                <p>{product.desc}</p>
+                <p>
+                  <b>SKU</b> {product.id}
+                </p>
+                <p>
+                  <b>Brand</b> {product.brand}
+                </p>
+
+                <div className={styles.count}>
+                {/* {isCartAdded < 0 ? null : (
+                    <>
+                      <button
+                        className="--btn"
+                        // onClick={() => decreaseCart(product)}
+                      >
+                        -
+                      </button>
+                      <p>
+                        <b>{cart.cartQuantity}</b>
+                      </p>
+                      <button
+                        className="--btn"
+                        // onClick={() => addToCart(product)}
+                      >
+                        +
+                      </button>
+                    </>
+                  )} */}
+    //             </div>
+    //             <button
+    //               className="--btn --btn-danger"
+    //               onClick={() => addtoCart(item)}
+    //             >
+    //               ADD TO CART
+    //             </button>
+    //           </div>
+    //         </div>
+    //       </>
+    //     )}
+    //   </div> 

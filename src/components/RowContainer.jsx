@@ -5,10 +5,11 @@ import NotFound from "../img/NotFound.svg";
 import { useStateValue } from "../context/StateProvider";
 import { actionType } from "../context/reducer";
 
+import { Link } from "react-router-dom";
 const RowContainer = ({ flag, data, scrollValue }) => {
   const rowContainer = useRef();
 
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState(JSON.parse(localStorage.getItem("cartItems")));
 
   const [{ cartItems }, dispatch] = useStateValue();
 
@@ -70,11 +71,13 @@ const RowContainer = ({ flag, data, scrollValue }) => {
                 className="w-40 h-40 -mt-8 drop-shadow-2xl"
                 whileHover={{ scale: 1.2 }}
               >
+                <Link to={`/product-details/${item?.id}` } state={{item, flag}}>
                 <img
                   src={item?.imageURL}
                   alt=""
                   className="w-full h-full object-contain"
                 />
+                </Link>
               </motion.div>
               <motion.div
                 whileTap={{ scale: 0.75 }}
