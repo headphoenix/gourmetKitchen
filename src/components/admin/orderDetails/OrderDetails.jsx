@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import useFetchDocument from "../../customHooks/useFetchDocument";
-import spinnerImg from "../../img/spinner.gif";
+import useFetchDocument from "../../../customHooks/useFetchDocument";
 import styles from "./OrderDetails.module.scss";
+import spinnerImg from "../../../img/spinner.gif";
+import { Link, useParams } from "react-router-dom";
+import ChangeOrderStatus from "../changeOrderStatus/ChangeOrderStatus";
+
 const OrderDetails = () => {
   const [order, setOrder] = useState(null);
   const { id } = useParams();
@@ -12,12 +14,14 @@ const OrderDetails = () => {
     setOrder(document);
   }, [document]);
 
+  console.log(order)
+
   return (
-    <section>
-      <div className={`container ${styles.table}`}>
+    <>
+      <div className={styles.table}>
         <h2>Order Details</h2>
         <div>
-          <Link to="/order-history">&larr; Back To Orders</Link>
+          <Link to="/admin/orders">&larr; Back To Orders</Link>
         </div>
         <br />
         {order === null ? (
@@ -32,6 +36,16 @@ const OrderDetails = () => {
             </p>
             <p>
               <b>Order Status</b> {order.orderStatus}
+            </p>
+            <p>
+              <b>Shipping Address</b>
+              <br />
+              Address: {order.shippingAddress.line1},
+              {order.shippingAddress.line2}, {order.shippingAddress.city}
+              <br />
+              State: {order.shippingAddress.state}
+              <br />
+              Country: {order.shippingAddress.country}
             </p>
             <br />
             <table>
@@ -72,8 +86,9 @@ const OrderDetails = () => {
             </table>
           </>
         )}
+        <ChangeOrderStatus order={order} id={id} />
       </div>
-    </section>
+    </>
   );
 };
 

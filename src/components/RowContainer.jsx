@@ -6,13 +6,12 @@ import { useStateValue } from "../context/StateProvider";
 import { actionType } from "../context/reducer";
 
 import { Link } from "react-router-dom";
+
 const RowContainer = ({ flag, data, scrollValue }) => {
   const rowContainer = useRef();
-
-  const [items, setItems] = useState(JSON.parse(localStorage.getItem("cartItems")));
-
+  const [items, setItems] = useState([]);
   const [{ cartItems }, dispatch] = useStateValue();
-
+ 
   const addtocart = () => {
     dispatch({
       type: actionType.SET_CARTITEMS,
@@ -20,17 +19,15 @@ const RowContainer = ({ flag, data, scrollValue }) => {
     });
     localStorage.setItem("cartItems", JSON.stringify(items));
   };
-
   useEffect(() => {
     rowContainer.current.scrollLeft += scrollValue;
   }, [scrollValue]);
-
   useEffect(() => {
     addtocart();
   }, [items]);
 
   const cartLogic = (cartItems, item) => {
-    
+
     console.log(cartItems);
     const existingCartItem = cartItems.find(
       (cartItem) => cartItem.id === item.id
@@ -46,9 +43,9 @@ const RowContainer = ({ flag, data, scrollValue }) => {
       }
       );
     }
-  
+
      return setItems([...cartItems, item]);
-    
+
   };
 
   return (
@@ -71,7 +68,7 @@ const RowContainer = ({ flag, data, scrollValue }) => {
                 className="w-40 h-40 -mt-8 drop-shadow-2xl"
                 whileHover={{ scale: 1.2 }}
               >
-                <Link to={`/product-details/${item?.id}` } state={{item, flag}}>
+                <Link to={`/product-details/${item?.id}`} state={{item:item}}>
                 <img
                   src={item?.imageURL}
                   alt=""
@@ -87,7 +84,6 @@ const RowContainer = ({ flag, data, scrollValue }) => {
                 <MdShoppingBasket className="text-white" />
               </motion.div>
             </div>
-
             <div className="w-full flex flex-col items-end justify-end -mt-8">
               <p className="text-textColor font-semibold text-base md:text-lg">
                 {item?.title}
@@ -114,5 +110,4 @@ const RowContainer = ({ flag, data, scrollValue }) => {
     </div>
   );
 };
-
 export default RowContainer;

@@ -4,6 +4,8 @@ export const actionType = {
   SET_CART_SHOW: "SET_CART_SHOW",
   SET_CARTITEMS: "SET_CARTITEMS",
   SET_MENU: "SET_MENU",
+  SET_ADDRESS: "SET_ADDRESS",
+  SET_ORDER_HISTORY: "SET_ORDER_HISTORY",
 };
 
 const reducer = (state, action) => {
@@ -39,6 +41,19 @@ const reducer = (state, action) => {
         ...state,
         menuShow: action.menuShow,
       };
+
+      case actionType.SET_ADDRESS:
+      return {
+        ...state,
+        shippingAddress: action.shippingAddress,
+      };
+
+      case actionType.SET_ORDER_HISTORY:
+      return {
+        ...state,
+        orderHistory: action.orderHistory,
+      };
+
 
 
     default:

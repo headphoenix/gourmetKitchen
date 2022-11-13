@@ -35,7 +35,7 @@ const CartContainer = () => {
     setTot(totalPrice);
     console.log(tot);
   }, [tot, flag]);
-
+ 
 //   const componentProps = {
 //     email,
 //     amount,
@@ -139,7 +139,7 @@ const CartContainer = () => {
             </div>
 
             {user ? (
-              <Link to="/cart">
+              <Link to="/carts" state={{tot:tot }}>
               <motion.button
                 whileTap={{ scale: 0.8 }}
                 type="button"

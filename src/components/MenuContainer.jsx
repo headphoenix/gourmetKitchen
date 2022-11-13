@@ -6,7 +6,7 @@ import RowContainer from "./RowContainer";
 import { useStateValue } from "../context/StateProvider";
 
 const MenuContainer = () => {
-  const [filter, setFilter] = useState("chicken");
+  const [filter, setFilter] = useState("meals");
 
   const [{ foodItems }, dispatch] = useStateValue(JSON.parse(localStorage.getItem("cartItems")));
 
@@ -27,6 +27,7 @@ const MenuContainer = () => {
                   filter === category.urlParamName ? "bg-cartNumBg" : "bg-card"
                 } w-24 min-w-[94px] h-28 cursor-pointer rounded-lg drop-shadow-xl flex flex-col gap-3 items-center justify-center hover:bg-cartNumBg `}
                 onClick={() => setFilter(category.urlParamName)}
+                value={filter}
               >
                 <div
                   className={`w-10 h-10 rounded-full shadow-lg ${

@@ -1,12 +1,17 @@
 import React, { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
-import { CreateContainer, Header, MainContainer, Product, Footer, Admin,CartContainer } from "./components";
+import { CreateContainer, Header, MainContainer, Product, Footer, Admin,CartContainer,Carts } from "./components";
 import { useStateValue } from "./context/StateProvider";
 import { getAllFoodItems } from "./utils/firebaseFunctions";
 import { actionType } from "./context/reducer";
 import ProductDetails from "./pages/product/productDetails/productDetails";
 import Cart from "./pages/cart/Cart";
+import CheckoutDetails from "./pages/checkout/CheckoutDetails";
+import Map from "./pages/checkout/Maps"
+import Checkout from "./pages/checkout/Checkout";
+import OrderHistory from "./pages/orderHistory/OrderHistory";
+import OrderDetails from "./pages/orderDetails/OrderDetails";
 
 
 const App = () => {
@@ -44,12 +49,19 @@ const App = () => {
             <Route path="/*" element={<MainContainer />} />
             <Route path="/createItem" element={<CreateContainer />} />
             <Route path="/product" element={<Product />} />
-            <Route path="/cart" element={<Cart />} />
             <Route path="/admin/*" element={<Admin />}/>
             <Route path="/product-details/:id" element={<ProductDetails />} />
-            <Route path="/cart" element={<Cart />} />
+            <Route path="/carts" element={<Carts />} />
+            <Route path="/checkout-details" element={<CheckoutDetails />} />
+            <Route path="/order-history" element={<OrderHistory />} />
+            <Route path="/order-details/:id" element={<OrderDetails />} />
+            <Route path="/map" element={<Map />} />
+            <Route path="/checkout" element={<Checkout />} />
           </Routes>
         </main>
+        <Routes>
+          
+        </Routes>
         <Footer />
       </div>
     </AnimatePresence>

@@ -9,4 +9,6 @@ export const initialState = {
   cartShow: false,
   cartItems: cartInfo,
   menuShow: false,
+  shippingAddress: {},
+  orderHistory: [],
 };

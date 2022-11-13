@@ -41,7 +41,7 @@ const initialState = {
   imageAsset: null,
   price: 0,
   category: null,
-  calories: "",
+  desc: "",
 };
 
 
@@ -67,7 +67,7 @@ const AddProduct = () => {
     return newState;
   });
   
-  const { title, calories, imageAsset, price, category} = product
+  const { title, desc, imageAsset, price, category} = product
 
   const uploadImage = (e) => {
     setIsLoading(true);
@@ -124,7 +124,7 @@ const AddProduct = () => {
   const saveDetails = () => {
     setIsLoading(true);
     try {
-      if (!title || !calories || !imageAsset || !price || !category) {
+      if (!title || !desc || !imageAsset || !price || !category) {
         setFields(true);
         setMsg("Required fields can't be empty");
         setAlertStatus("danger");
@@ -138,7 +138,7 @@ const AddProduct = () => {
           title: title,
           imageURL: imageAsset,
           category: category,
-          calories: calories,
+          desc: desc,
           qty: 1,
           price: price,
         };
@@ -224,7 +224,7 @@ const AddProduct = () => {
         title: title,
         imageURL: imageAsset,
         category: category,
-        calories: calories,
+        desc: desc,
         qty: 1,
         price: price,
       };
@@ -342,16 +342,16 @@ const AddProduct = () => {
           )}
         </div>
 
-        <div className="w-full flex flex-col md:flex-row items-center gap-3">
-          <div className="w-full py-2 border-b border-gray-300 flex items-center gap-2">
+        <div className="w-full h-full flex flex-col items-center gap-3">
+          <div className="w-full h-200 py-2 border-b border-gray-300 flex items-center gap-2">
             <MdFoodBank className="text-gray-700 text-2xl" />
             <input
               type="text"
               required
-              value={calories}
-              name="calories"
+              value={desc}
+              name="desc"
               onChange={(e) => handleInputChange(e)}
-              placeholder="Calories"
+              placeholder="Description"
               className="w-full h-full text-lg bg-transparent outline-none border-none placeholder:text-gray-400 text-textColor"
             />
           </div>

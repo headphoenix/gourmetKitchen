@@ -10,8 +10,8 @@ const Navbar = () => {
   return (
     <div className={styles.navbar}>
       <div className={styles.user}>
-        <FaUserCircle size={40} color="#fff" />
-        <h4>Admin G</h4>
+        <FaUserCircle size={40} color="blue" />
+        <h4>Admin Dashboard</h4>
       </div>
       <nav>
         <ul>

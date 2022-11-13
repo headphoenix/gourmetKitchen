@@ -39,6 +39,8 @@ const ProductDetails = () => {
   
 
   const { document } = useFetchDocument("foodItems", id);
+
+  console.log(document)
   const [qty, setQty] = useState(item.qty);
 
   useEffect(() => {
@@ -80,9 +82,9 @@ const ProductDetails = () => {
   };
 
 
-  const cart = cartItems.find((cart) => cart.id === id);
+  const cart = cartItems?.find((cart) => cart.id === id);
   
-  const isCartAdded = cartItems.findIndex((cart) => {
+  const isCartAdded = cartItems?.findIndex((cart) => {
     return cart.id === id;
   });
 
@@ -124,7 +126,7 @@ const ProductDetails = () => {
     }
   };
 
-  const quantity = cartItems.map((item) => {
+  const quantity = cartItems?.map((item) => {
     if (item.id === id) {
       return item.qty
     }

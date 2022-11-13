@@ -3,6 +3,7 @@ import CB from "../img/cb.png";
 import C3 from "../img/c3.png";
 import Fi1 from "../img/fi1.png";
 import PC from "../img/pc2.png";
+import Ck from "../img/c13.png"
 
 export const heroData = [
   {
@@ -39,7 +40,7 @@ export const categories = [
   {
     id: 1,
     name: "Meals",
-    urlParamName: "gourmet",
+    urlParamName: "meals",
   },
   {
     id: 2,
