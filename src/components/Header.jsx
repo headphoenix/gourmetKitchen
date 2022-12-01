@@ -93,9 +93,11 @@ const Header = () => {
             exit={{ opacity: 0, x: 200 }}
             className="flex items-center gap-24 "
           >
+            <Link to="/menu">
             <li className="text-lg text-textColor hover:text-headingColor duration-100 transition-all ease-in-out cursor-pointer">
               Menu
             </li>
+            </Link>
             <li className="text-lg text-textColor hover:text-headingColor duration-100 transition-all ease-in-out cursor-pointer">
               About Us
             </li>
@@ -106,7 +108,7 @@ const Header = () => {
               Orders
             </li>
             </Link>}
-            {user && user.email === "kofiamoodarko@gmail.com" && (
+            {user && user.email === "kofidamoo@gmail.com" && (
               <Link to={"/admin/home"}>
                 <li className="text-lg text-textColor hover:text-headingColor duration-100 transition-all ease-in-out cursor-pointer">
                   Admin
@@ -132,7 +134,7 @@ const Header = () => {
           <div className="relative">
             <motion.img
               whileTap={{ scale: 0.6 }}
-              src={user ? user.photoURL : Avatar}
+              src={user && user.photoURL ? user.photoURL : Avatar}
               className="w-10 min-w-[40px] h-10 min-h-[40px] drop-shadow-xl cursor-pointer rounded-full"
               alt={user ? user.displayName : "userprofile"}
               onClick={login}
@@ -233,12 +235,14 @@ const Header = () => {
               )}
 
               <ul className="flex flex-col ">
+              <Link to="/menu">
                 <li
                   className="text-base text-textColor hover:text-headingColor duration-100 transition-all ease-in-out cursor-pointer hover:bg-slate-100 px-4 py-2"
                   onClick={() => setIsMenu(false)}
                 >
                   Menu
                 </li>
+                </Link>
                 <li
                   className="text-base text-textColor hover:text-headingColor duration-100 transition-all ease-in-out cursor-pointer hover:bg-slate-100 px-4 py-2"
                   onClick={() => setIsMenu(false)}
@@ -255,7 +259,7 @@ const Header = () => {
                   Orders
                 </li>
                 </Link>}
-                {user && user.email === "kofiamoodarko@gmail.com" && (
+                {user && user.email === "kofidamoo@gmail.com" && (
                   <AdminOnlyLink>
                     <Link to="/admin/home">
                       <li

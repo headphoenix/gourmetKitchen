@@ -12,10 +12,11 @@ import Map from "./pages/checkout/Maps"
 import Checkout from "./pages/checkout/Checkout";
 import OrderHistory from "./pages/orderHistory/OrderHistory";
 import OrderDetails from "./pages/orderDetails/OrderDetails";
+import Menu from "./pages/menu";
 
 
 const App = () => {
-  const [{ foodItems, menuShow, cartShow }, dispatch] = useStateValue();
+  const [{ foodItems, menuShow, cartShow, user }, dispatch] = useStateValue();
 
   const fetchData = async () => {
     await getAllFoodItems().then((data) => {
@@ -49,7 +50,7 @@ const App = () => {
             <Route path="/*" element={<MainContainer />} />
             <Route path="/createItem" element={<CreateContainer />} />
             <Route path="/product" element={<Product />} />
-            <Route path="/admin/*" element={<Admin />}/>
+            {user?.email === "kofidamoo@gmail.com" && <Route path="/admin/*" element={<Admin />}/> }
             <Route path="/product-details/:id" element={<ProductDetails />} />
             <Route path="/carts" element={<Carts />} />
             <Route path="/checkout-details" element={<CheckoutDetails />} />
@@ -57,6 +58,7 @@ const App = () => {
             <Route path="/order-details/:id" element={<OrderDetails />} />
             <Route path="/map" element={<Map />} />
             <Route path="/checkout" element={<Checkout />} />
+            <Route path="/menu" element={<Menu />} />
           </Routes>
         </main>
         <Routes>

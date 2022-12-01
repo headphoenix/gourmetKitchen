@@ -4,20 +4,28 @@ import { motion } from "framer-motion";
 import NotFound from "../img/NotFound.svg";
 import { useStateValue } from "../context/StateProvider";
 import { actionType } from "../context/reducer";
+import { toast } from "react-toastify";
 
 import { Link } from "react-router-dom";
 
 const RowContainer = ({ flag, data, scrollValue }) => {
   const rowContainer = useRef();
   const [items, setItems] = useState([]);
-  const [{ cartItems }, dispatch] = useStateValue();
+  const [{ cartItems, user }, dispatch] = useStateValue();
  
   const addtocart = () => {
+    if (!user) {
+      toast.error("Please login to add items to cart", {
+        icon: <MdShoppingBasket className="text-2xl text-cartNumBg" />,
+        toastId: "unauthorizedAddToCart",
+      });
+    } else {
     dispatch({
       type: actionType.SET_CARTITEMS,
       cartItems: items,
     });
     localStorage.setItem("cartItems", JSON.stringify(items));
+  }
   };
   useEffect(() => {
     rowContainer.current.scrollLeft += scrollValue;
@@ -93,7 +101,7 @@ const RowContainer = ({ flag, data, scrollValue }) => {
               </p>
               <div className="flex items-center gap-8">
                 <p className="text-lg text-headingColor font-semibold">
-                  <span className="text-sm text-red-500">$</span> {item?.price}
+                  <span className="text-sm text-red-500">GHS</span> {item?.price}
                 </p>
               </div>
             </div>

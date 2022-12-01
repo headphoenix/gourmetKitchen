@@ -6,7 +6,7 @@ const AdminOnlyRoute = ({ children }) => {
   
 const [{user}] = useStateValue()
  
-  if (user.email === "kofiamoodarko@gmail.com") {
+  if (user.email === "kofidamoo@gmail.com") {
     return children;
   }
   return (
@@ -26,7 +26,7 @@ const [{user}] = useStateValue()
 export const AdminOnlyLink = ({ children }) => {
     const [{user}] = useStateValue()
 
-  if (user.email === "kofiamoodarko@gmail.com") {
+  if (user.email === "kofidamoo@gmail.com") {
     return children;
   }
   return null;
