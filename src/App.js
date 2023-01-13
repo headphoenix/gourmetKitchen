@@ -16,7 +16,11 @@ import Menu from "./pages/menu";
 
 
 const App = () => {
-  const [{ foodItems, menuShow, cartShow, user }, dispatch] = useStateValue();
+  const [{ foodItems, menuShow, cartShow, user, cartItems }, dispatch] = useStateValue();
+
+  useEffect(() => {
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  }, [cartItems]);
 
   const fetchData = async () => {
     await getAllFoodItems().then((data) => {
@@ -24,6 +28,13 @@ const App = () => {
         type: actionType.SET_FOOD_ITEMS,
         foodItems: data,
       });
+    });
+  };
+
+  const showCart = () => {
+    dispatch({
+      type: actionType.SET_CART_SHOW,
+      cartShow: false,
     });
   };
 
@@ -36,21 +47,19 @@ const App = () => {
 
   useEffect(() => {
     fetchData();
+    showCart();
   }, []);
 
   return (
     <AnimatePresence exitBeforeEnter>
       <div className="w-screen h-auto flex flex-col bg-primary" >
         <Header />
-
-        {cartShow && <CartContainer />}
-
         <main className="mt-14 md:mt-20 px-4 md:px-16 py-4 w-full" onClick={menuRemove}>
           <Routes>
             <Route path="/*" element={<MainContainer />} />
             <Route path="/createItem" element={<CreateContainer />} />
             <Route path="/product" element={<Product />} />
-            {user?.email === "kofidamoo@gmail.com" && <Route path="/admin/*" element={<Admin />}/> }
+            {user?.email === "kofiamoodarko@gmail.com" && <Route path="/admin/*" element={<Admin />}/> }
             <Route path="/product-details/:id" element={<ProductDetails />} />
             <Route path="/carts" element={<Carts />} />
             <Route path="/checkout-details" element={<CheckoutDetails />} />
@@ -60,10 +69,7 @@ const App = () => {
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/menu" element={<Menu />} />
           </Routes>
-        </main>
-        <Routes>
-          
-        </Routes>
+        </main> 
         <Footer />
       </div>
     </AnimatePresence>

@@ -10,8 +10,12 @@ import { Link } from "react-router-dom";
 
 const RowContainer = ({ flag, data, scrollValue }) => {
   const rowContainer = useRef();
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState(JSON.parse(localStorage.getItem("cartItems")));
   const [{ cartItems, user }, dispatch] = useStateValue();
+
+  const saveCart = (cartItems) => {
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  };
  
   const addtocart = () => {
     if (!user) {
@@ -67,6 +71,7 @@ const RowContainer = ({ flag, data, scrollValue }) => {
     >
       {data && data.length > 0 ? (
         data.map((item) => (
+          <Link to={`/product-details/${item?.id}`} state={{item:item}}>
           <div
             key={item?.id}
             className="w-275 h-[175px] min-w-[275px] md:w-300 md:min-w-[300px]  bg-cardOverlay rounded-lg py-2 px-4  my-12 backdrop-blur-lg hover:drop-shadow-lg flex flex-col items-center justify-evenly relative"
@@ -76,18 +81,18 @@ const RowContainer = ({ flag, data, scrollValue }) => {
                 className="w-40 h-40 -mt-8 drop-shadow-2xl"
                 whileHover={{ scale: 1.2 }}
               >
-                <Link to={`/product-details/${item?.id}`} state={{item:item}}>
+                
                 <img
                   src={item?.imageURL}
                   alt=""
                   className="w-full h-full object-contain"
                 />
-                </Link>
+                
               </motion.div>
               <motion.div
                 whileTap={{ scale: 0.75 }}
                 className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center cursor-pointer hover:shadow-md -mt-8"
-                onClick={() => cartLogic(cartItems, item)}
+                // onClick={() => cartLogic(cartItems, item)}
               >
                 <MdShoppingBasket className="text-white" />
               </motion.div>
@@ -106,6 +111,7 @@ const RowContainer = ({ flag, data, scrollValue }) => {
               </div>
             </div>
           </div>
+          </Link>
         ))
       ) : (
         <div className="w-full flex flex-col items-center justify-center">

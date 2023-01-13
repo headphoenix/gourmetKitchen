@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { MdOutlineKeyboardBackspace } from "react-icons/md";
 import { RiRefreshFill } from "react-icons/ri";
 
@@ -27,6 +27,26 @@ const CartContainer = () => {
       cartShow: !cartShow,
     });
   };
+
+  const cartRef = useRef();
+
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (cartRef.current && !cartRef.current.contains(e.target)) {
+        // Close the cart
+        dispatch({
+          type: actionType.SET_CART_SHOW,
+          cartShow: !cartShow,
+        });
+      }
+    };
+
+    document.addEventListener("click", handleClick);
+
+    return () => {
+      document.removeEventListener("click", handleClick);
+    };
+  }, [cartRef]);
 
   useEffect(() => {
     let totalPrice = cartItems.reduce(function (accumulator, item) {
@@ -80,6 +100,7 @@ const CartContainer = () => {
 
   return (
     <motion.div
+    ref={cartRef}
       initial={{ opacity: 0, x: 200 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 200 }}

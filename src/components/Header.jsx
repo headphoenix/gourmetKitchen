@@ -67,6 +67,10 @@ const Header = () => {
       type: actionType.SET_USER,
       user: null,
     });
+    dispatch({
+      type: actionType.SET_CARTITEMS,
+      cartItems: [],
+    });
 
   };
 
@@ -108,7 +112,7 @@ const Header = () => {
               Orders
             </li>
             </Link>}
-            {user && user.email === "kofidamoo@gmail.com" && (
+            {user && user.email === "kofiamoodarko@gmail.com" && (
               <Link to={"/admin/home"}>
                 <li className="text-lg text-textColor hover:text-headingColor duration-100 transition-all ease-in-out cursor-pointer">
                   Admin
@@ -136,7 +140,6 @@ const Header = () => {
               whileTap={{ scale: 0.6 }}
               src={user && user.photoURL ? user.photoURL : Avatar}
               className="w-10 min-w-[40px] h-10 min-h-[40px] drop-shadow-xl cursor-pointer rounded-full"
-              alt={user ? user.displayName : "userprofile"}
               onClick={login}
             />
             {logoutMenu && (
@@ -199,7 +202,6 @@ const Header = () => {
             whileTap={{ scale: 0.6 }}
             src={user ? user.photoURL : Avatar}
             className="w-10 min-w-[40px] h-10 min-h-[30px] drop-shadow-xl cursor-pointer rounded-full"
-            alt={user ? user.displayName : "userprofile"}
             onClick={login}
           />
           {

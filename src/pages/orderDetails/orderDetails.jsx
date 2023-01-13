@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import useFetchDocument from "../../customHooks/useFetchDocument";
 import spinnerImg from "../../img/spinner.gif";
 import styles from "./OrderDetails.module.scss";
+
 const OrderDetails = () => {
   const [order, setOrder] = useState(null);
   const { id } = useParams();
