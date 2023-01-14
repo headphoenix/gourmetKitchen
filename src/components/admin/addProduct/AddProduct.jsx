@@ -21,7 +21,7 @@ import {
   MdFoodBank,
   MdAttachMoney,
 } from "react-icons/md";
-import { categories, packaged } from "../../../utils/data";
+import { categories, } from "../../../utils/data";
 import Loader from "../../Loader";
 import {
   deleteObject,
@@ -41,7 +41,6 @@ const initialState = {
   imageAsset: null,
   price: 0,
   category: null,
-  pack: null,
   desc: "",
 };
 
@@ -298,29 +297,7 @@ const AddProduct = () => {
               ))}
           </select>
         </div>
-       
-        {category === "foods" && <div className="w-full">
-          <select
-            name="pack"
-            onChange={(e) => handleInputChange(e)}
-            className="outline-none w-full text-base border-b-2 border-gray-200 p-2 rounded-md cursor-pointer"
-          >
-            <option value="other" className="bg-white">
-              Select Food Category
-            </option>
-            {packaged &&
-              packaged.map((item) => (
-                <option
-                  key={item.id}
-                  className="text-base border-0 outline-none capitalize bg-white text-headingColor"
-                  value={item.urlParamName}
-                >
-                  {item.name}
-                </option>
-              ))}
-          </select>
-        </div>}
-
+        
         <div className="group flex justify-center items-center flex-col border-2 border-dotted border-gray-300 w-full h-225 md:h-340 cursor-pointer rounded-lg">
           {isLoading ? (
             <Loader />
@@ -409,3 +386,11 @@ const AddProduct = () => {
 };
 
 export default AddProduct;
+ 
+
+
+
+
+// 2. Add an input field where I can edit/add Extras like size, different ingredients, and preferences with their price increments to a particular food item I want the extras to be added and saved to firebase much like the products too.
+// So that when a customer is trying to order a food item as he chooses his/her preferences the prices increase accordingly.
+// 3. Whenever I try to edit a food item, the image disappears and I have to re-upload it. Fix this bug.

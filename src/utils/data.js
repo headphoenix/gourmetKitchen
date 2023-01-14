@@ -74,35 +74,35 @@ export const categories = [
   },
 ];
 
-export const packaged = [
-  {
-    id: 0,
-    name: "Jollof",
-    urlParamName: "jollof",
-  },
-  {
-    id: 2,
-    name: "Waakye",
-    urlParamName: "waakye",
-  },
-  {
-    id: 3,
-    name: "Fried Rice",
-    urlParamName: "friedrice",
-  },
-  {
-    id: 4,
-    name: "Banku",
-    urlParamName: "banku",
-  },
-  {
-    id: 5,
-    name: "Plain Rice",
-    urlParamName: "plain rice",
-  },
-  {
-    id: 6,
-    name: "Fufu",
-    urlParamName: "fufu",
-  },
-]
+// export const packaged = [
+//   {
+//     id: 0,
+//     name: "Jollof",
+//     urlParamName: "jollof",
+//   },
+//   {
+//     id: 2,
+//     name: "Waakye",
+//     urlParamName: "waakye",
+//   },
+//   {
+//     id: 3,
+//     name: "Fried Rice",
+//     urlParamName: "friedrice",
+//   },
+//   {
+//     id: 4,
+//     name: "Banku",
+//     urlParamName: "banku",
+//   },
+//   {
+//     id: 5,
+//     name: "Plain Rice",
+//     urlParamName: "plain rice",
+//   },
+//   {
+//     id: 6,
+//     name: "Fufu",
+//     urlParamName: "fufu",
+//   },
+// ]
