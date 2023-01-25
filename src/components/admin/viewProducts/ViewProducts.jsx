@@ -70,14 +70,16 @@ const ViewProducts = () => {
   const deleteProduct = async (id, imageURL) => {
     try {
       await deleteDoc(doc(firestore, "foodItems", id));
-
       const storageRef = ref(storage, imageURL);
       await deleteObject(storageRef);
+      await deleteDoc(doc(firestore, "foodItems", id));
       toast.success("Product deleted successfully.");
+      getAllFoodItems()
     } catch (error) {
       toast.error(error.message);
     }
   };
+
   return (
     <>
       {isLoading && <Loader />}

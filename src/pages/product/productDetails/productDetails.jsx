@@ -88,6 +88,7 @@ const ProductDetails = () => {
   const location = useLocation();
   const { item } = location.state || {};
   const { id } = useParams();
+  const [isInCart, setIsInCart] = useState(false);
 
   const [{ cartItems }, dispatch] = useStateValue();
   const { document } = useFetchDocument("foodItems", id);
@@ -97,19 +98,45 @@ const ProductDetails = () => {
       return cart.id === id;
     })?.qty || 1
   );
-
+    
+  console.log(qty)
+  const [totalPrice, setTotalPrice] = useState(document?.price || 0);
   const [selectedExtras, setSelectedExtras] = useState([]);
+  const [showExtras, setShowExtras] = useState(false);
 
   const classes = useStyles();
   const theme = useTheme();
   const isDownSm = useMediaQuery(theme.breakpoints.down("sm"));
 
+  useEffect(() => {
+    if (cartItems) {
+      const cartProduct = cartItems.find((cart) => cart.id === id);
+      if (cartProduct) {
+        setIsInCart(true);
+        setSelectedExtras(cartProduct.selectedExtras);
+      } else {
+        setIsInCart(false);
+      }
+    }
+  }, [cartItems, id]);
+
+  const handleAddToCart = () => {
+    setShowExtras(true);
+    setTotalPrice(document?.price);
+    dispatch({
+      type: actionType.SET_CARTITEMS,
+      cartItems: [...cartItems, { ...document, qty, selectedExtras, totalPrice }],
+    });
+}
+
   const handleAddExtra = (extra) => {
     setSelectedExtras([...selectedExtras, { ...extra, qty: 1 }]);
+    setTotalPrice(totalPrice + extra.price);
   };
 
   const handleRemoveExtra = (extra) => {
     setSelectedExtras(selectedExtras.filter((e) => e.name !== extra.name));
+    setTotalPrice(totalPrice - (extra.price * extra.qty));
   };
 
   const handleChangeExtraQty = (extra, action) => {
@@ -117,11 +144,14 @@ const ProductDetails = () => {
     const newSelectedExtras = [...selectedExtras];
     if (action === "add") {
       newSelectedExtras[extraIndex].qty = newSelectedExtras[extraIndex].qty + 1;
+      setTotalPrice(totalPrice + extra.price);
     } else if (action === "remove") {
       newSelectedExtras[extraIndex].qty = newSelectedExtras[extraIndex].qty - 1;
+      setTotalPrice(totalPrice - extra.price);
     }
     setSelectedExtras(newSelectedExtras);
-  };
+};
+
 
   const cart = cartItems?.find((cart) => cart.id === id);
   const isCartAdded = cartItems?.findIndex((cart) => {
@@ -159,10 +189,11 @@ const ProductDetails = () => {
   };
 
   const addToCart = () => {
-    if (isCartAdded === -1) {
+    if (!isInCart) {
+      setIsInCart(true);
       return dispatch({
         type: actionType.SET_CARTITEMS,
-        cartItems: [...cartItems, { ...document, qty, selectedExtras }],
+        cartItems: [...cartItems, { ...item, qty, selectedExtras, totalPrice }],
       });
     } else {
       return updateQty("add", id);
@@ -186,7 +217,8 @@ const ProductDetails = () => {
             <Title>{document.title}</Title>
             <Desc>{document.desc}</Desc>
             <Price>{document.price}</Price>
-            <Grid container spacing={3} className={classes.extraContainer}>
+            {isInCart && <Grid container spacing={3} className={classes.extraContainer}>
+              <h4>Here are some of the Extras you can order with this food product</h4>
               {document.extras?.map((extra) => (
                 <Grid item xs={12} key={extra.name} className={classes.extra}>
                    <Grid
@@ -252,7 +284,7 @@ const ProductDetails = () => {
                   </Grid>
                 </Grid>
               ))}
-            </Grid>
+            </Grid>}
             {!cart ? (
               <Button
                 variant="contained"
@@ -260,7 +292,7 @@ const ProductDetails = () => {
                 className="mt-5"
                 onClick={addToCart}
               >
-                BUY NOW
+                Add to Cart
               </Button>
             ) : (
               <AddContainer>

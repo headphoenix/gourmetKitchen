@@ -195,7 +195,7 @@ const CheckoutDetails = () => {
               type="text"
               placeholder="GN-0000-0000"
               required
-              name="phone"
+              name="digital"
               value={shippingData.digital}
               onChange={handleShipping}
             />

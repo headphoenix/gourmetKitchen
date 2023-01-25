@@ -23,12 +23,14 @@ import {
 } from "react-icons/md";
 import { categories } from "../../../utils/data";
 import Loader from "../../Loader";
+
 import {
   deleteObject,
   getDownloadURL,
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
+
 import { firestore, storage } from "../../../firebase.config";
 import {
   getAllFoodItems,
@@ -110,6 +112,7 @@ const AddProduct = () => {
   // }, [extras]);
 
   const uploadImage = (e) => {
+    console.log("uploading image")
     setIsLoading(true);
     const imageFile = e.target.files[0];
     const storageRef = ref(storage, `Images/${Date.now()}-${imageFile.name}`);
@@ -253,7 +256,7 @@ const AddProduct = () => {
     const { name, value } = e.target;
     setProduct({ ...product, [name]: value });
   };
-  console.log(product);
+  //console.log(product);
 
   const navigate = useNavigate();
 
