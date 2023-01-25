@@ -71,6 +71,7 @@ const App = () => {
           </Routes>
         </main> 
         <Footer />
+        {cartShow && <CartContainer />}
       </div>
     </AnimatePresence>
   );

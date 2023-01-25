@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 import {
@@ -21,7 +21,7 @@ import {
   MdFoodBank,
   MdAttachMoney,
 } from "react-icons/md";
-import { categories, } from "../../../utils/data";
+import { categories } from "../../../utils/data";
 import Loader from "../../Loader";
 import {
   deleteObject,
@@ -30,7 +30,11 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { firestore, storage } from "../../../firebase.config";
-import { getAllFoodItems, saveItem } from "../../../utils/firebaseFunctions";
+import {
+  getAllFoodItems,
+  saveItem,
+  save,
+} from "../../../utils/firebaseFunctions";
 import { actionType } from "../../../context/reducer";
 import { useStateValue } from "../../../context/StateProvider";
 
@@ -44,30 +48,66 @@ const initialState = {
   desc: "",
 };
 
-
-
 const AddProduct = () => {
   const [fields, setFields] = useState(false);
   const [alertStatus, setAlertStatus] = useState("danger");
   const [msg, setMsg] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [{ foodItems }, dispatch] = useStateValue();
-  const [uploadProgress, setUploadProgress] = useState(0)
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const { id } = useParams();
-
   const products = foodItems;
-  //console.log(products)
-  
-  const productEdit = products?.find((item) => item.id === id);
+  const productEdit = products?.find((item) => item.id === id) || {extras: []};
+
+  const [extras, setExtras] = useState(productEdit?.extras || []);
+
+  const [extraName, setExtraName] = useState("");
+  const [extraPrice, setExtraPrice] = useState(0);
 
   const [product, setProduct] = useState(() => {
-    const newState = detectForm(id, { ...initialState}, productEdit);
-    //console.log(newState)
+    const newState = detectForm(
+      id,
+      { ...initialState, extras: extras, imageAsset: productEdit?.imageAsset },
+      productEdit
+    );
+    if (!newState.imageAsset && productEdit) {
+      newState.imageAsset = productEdit.imageURL;
+    }
     return newState;
   });
+
+  const { title, desc, imageAsset, price, category, pack } = product;
+ 
+  const addExtra = () => {
+    if (!extraName || !extraPrice) {
+      setAlertStatus("danger");
+      setMsg("Extra name and price are required.");
+      setFields(true);
+      setTimeout(() => {
+        setFields(false);
+      }, 4000);
+    } else {
+      const updatedExtras = productEdit
+        ? [...productEdit.extras, { name: extraName, price: extraPrice }]
+        : [...extras, { name: extraName, price: extraPrice }];
+        setExtras([...extras, { name: extraName, price: extraPrice }]);
+      setProduct({ ...product, extras: updatedExtras });
+      setExtraName("");
+      setExtraPrice(0);
+      setAlertStatus("success");
+      setMsg("Extra added successfully.");
+      setFields(true);
+      setTimeout(() => {
+        setFields(false);
+      }, 4000);
   
-  const { title, desc, imageAsset, price, category, pack} = product
+    }
+  };  
+  
+  // useEffect(() => {
+  //   setProduct({ ...product, extras });
+  // }, [extras]);
 
   const uploadImage = (e) => {
     setIsLoading(true);
@@ -110,7 +150,7 @@ const AddProduct = () => {
     setIsLoading(true);
     const deleteRef = ref(storage, imageAsset);
     deleteObject(deleteRef).then(() => {
-      setProduct({...product, imageAsset: null});
+      setProduct({ ...product, imageAsset: null });
       setIsLoading(false);
       setFields(true);
       setMsg("Image deleted successfully 😊");
@@ -138,10 +178,10 @@ const AddProduct = () => {
           title: title,
           imageURL: imageAsset,
           category: category,
-          pack: pack,
           desc: desc,
           qty: 1,
           price: price,
+          extras: extras,
         };
         saveItem(data);
         setIsLoading(false);
@@ -168,7 +208,7 @@ const AddProduct = () => {
   };
 
   const clearData = () => {
-    setProduct({ ...initialState});
+    setProduct({ ...initialState });
   };
 
   const fetchData = async () => {
@@ -179,7 +219,6 @@ const AddProduct = () => {
       });
     });
   };
-
 
   //console.log(id)
 
@@ -195,13 +234,27 @@ const AddProduct = () => {
   // console.log(finalProduct);
   //console.log(initialState)
 
- 
+  const handleExtraChange = (event, index) => {
+    const updatedExtras = [...extras];
+    updatedExtras[index] = {
+      ...updatedExtras[index],
+      [event.target.name]: event.target.value,
+    };
+    setExtras(updatedExtras);
+  };
+  
+  const handleDeleteExtra = (index) => {
+    const updatedExtras = [...extras];
+    updatedExtras.splice(index, 1);
+    setExtras(updatedExtras);
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setProduct({ ...product, [name]: value });
   };
-    console.log(product)
-  //console.log(product)
+  console.log(product);
+
   const navigate = useNavigate();
 
   function detectForm(id, f1, f2) {
@@ -216,24 +269,27 @@ const AddProduct = () => {
     setIsLoading(true);
 
     if (product.imageURL !== productEdit.imageURL) {
-      const storageRef = ref(storage, productEdit.imageAsset);
-      deleteObject(storageRef);
+      if (productEdit.imageURL) {
+        const storageRef = ref(storage, productEdit.imageAsset);
+        deleteObject(storageRef);
+      }
+    } else {
+      productEdit.imageURL = product.imageURL;
     }
 
     try {
       const data = {
         title: title,
-        imageURL: imageAsset,
+        imageURL: productEdit.imageURL,
         category: category,
         desc: desc,
         qty: 1,
         price: price,
+        extras: extras,
       };
-      setDoc(doc(firestore, "foodItems", id), data, 
-      {
+      setDoc(doc(firestore, "foodItems", id), data, {
         merge: true,
-      }
-      );
+      });
       setIsLoading(false);
       setMsg("Data Edit successfully 😊");
       toast.success("Product Edited Successfully");
@@ -244,6 +300,33 @@ const AddProduct = () => {
     }
   };
 
+  const handleChange = (event, index) => {
+    const newExtras = [...productEdit.extras];
+    newExtras[index][event.target.name] = event.target.value;
+    setProduct({ ...product, extras: newExtras });
+  };
+
+  const handleDelete = (index) => {
+    const newExtras = [...productEdit.extras];
+    newExtras.splice(index, 1);
+    setProduct({ ...product, extras: newExtras });
+  };
+
+  // useEffect(() => {
+  //   setExtras([...extras, { name: extraName, price: extraPrice }]);
+  // }, [extras]);
+
+  const deleteExtra = (index) => {
+    const newExtras = [...extras];
+    newExtras.splice(index, 1);
+    setExtras(newExtras);
+    setAlertStatus("success");
+    setMsg("Extra deleted successfully.");
+    setFields(true);
+    setTimeout(() => {
+      setFields(false);
+    }, 4000);
+  };
 
   return (
     <div className="w-full min-h-screen flex items-center justify-center">
@@ -262,7 +345,7 @@ const AddProduct = () => {
             {msg}
           </motion.p>
         )}
-         <h2>{detectForm(id, "Add New Product", "Edit Product")}</h2>
+        <h2>{detectForm(id, "Add New Product", "Edit Product")}</h2>
         <div className="w-full py-2 border-b border-gray-300 flex items-center gap-2">
           <MdFastfood className="text-xl text-gray-700" />
           <input
@@ -297,7 +380,42 @@ const AddProduct = () => {
               ))}
           </select>
         </div>
-        
+        <div>
+        <h3>Extras</h3>
+  {extras.map((extra, index) => (
+    <div key={index}>
+      <label>Extra name:</label>
+      <input
+        type="text"
+        value={extra.name}
+        name='name'
+        onChange={(e) => handleExtraChange(e, index)}
+      />
+      <label>Extra price:</label>
+      <input
+        type="number"
+        value={extra.price}
+        name='price'
+        onChange={(e) => handleExtraChange(e, index)}
+      />
+      <button onClick={() => handleDeleteExtra(index)}>Delete</button>
+    </div>
+  ))}
+          <input
+            type="text"
+            placeholder="Extra name"
+            value={extraName}
+            onChange={(e) => setExtraName(e.target.value)}
+          />
+          <input
+            type="number"
+            placeholder="Extra price"
+            value={extraPrice}
+            onChange={(e) => setExtraPrice(e.target.value)}
+          />
+          <button onClick={addExtra}>Add extra</button>
+        </div>
+
         <div className="group flex justify-center items-center flex-col border-2 border-dotted border-gray-300 w-full h-225 md:h-340 cursor-pointer rounded-lg">
           {isLoading ? (
             <Loader />
@@ -343,17 +461,17 @@ const AddProduct = () => {
           )}
         </div>
 
+
         <div className="w-full h-full flex flex-col items-center gap-3">
           <div className="w-full h-200 py-2 border-b border-gray-300 flex items-center gap-2">
             <MdFoodBank className="text-gray-700 text-2xl" />
-            <input
-              type="text"
+            <textarea
+              className="w-full h-64 resize-none leading-5 text-lg bg-transparent outline-none border-none placeholder:text-gray-400 text-textColor"
               required
               value={desc}
               name="desc"
               onChange={(e) => handleInputChange(e)}
               placeholder="Description"
-              className="w-full h-full text-lg bg-transparent outline-none border-none placeholder:text-gray-400 text-textColor"
             />
           </div>
 
@@ -386,10 +504,6 @@ const AddProduct = () => {
 };
 
 export default AddProduct;
- 
-
-
-
 
 // 2. Add an input field where I can edit/add Extras like size, different ingredients, and preferences with their price increments to a particular food item I want the extras to be added and saved to firebase much like the products too.
 // So that when a customer is trying to order a food item as he chooses his/her preferences the prices increase accordingly.

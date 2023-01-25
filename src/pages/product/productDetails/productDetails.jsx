@@ -38,8 +38,51 @@ import {
   Button,
 } from "./product.styles";
 
+import {
+  Grid,
+  Typography,
+  IconButton,
+  makeStyles,
+  useTheme,
+  useMediaQuery,
+} from "@material-ui/core";
+
+import RemoveIcon from "@material-ui/icons/Remove";
+import AddIcon from "@material-ui/icons/Add";
+import AddToCartIcon from "@material-ui/icons/AddShoppingCart";
+import RemoveFromCartIcon from "@material-ui/icons/RemoveShoppingCart";
+
 let items = [];
 
+const useStyles = makeStyles({
+  extraContainer: {
+    display: "flex",
+    flexWrap: "wrap",
+    alignItems: "center",
+    justifyContent: "space-around",
+  },
+  extra: {
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-around",
+    padding: "10px",
+    "&:not(:last-of-type)": {
+      borderBottom: "1px solid #ccc",
+    },
+  },
+  extraName: {
+    flex: 1,
+  },
+  extraPrice: {
+    flex: 1,
+    textAlign: "center",
+  },
+  extraQty: {
+    flex: 1,
+    textAlign: "center",
+  },
+});
 
 const ProductDetails = () => {
   const location = useLocation();
@@ -54,19 +97,36 @@ const ProductDetails = () => {
       return cart.id === id;
     })?.qty || 1
   );
-   
+
+  const [selectedExtras, setSelectedExtras] = useState([]);
+
+  const classes = useStyles();
+  const theme = useTheme();
+  const isDownSm = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const handleAddExtra = (extra) => {
+    setSelectedExtras([...selectedExtras, { ...extra, qty: 1 }]);
+  };
+
+  const handleRemoveExtra = (extra) => {
+    setSelectedExtras(selectedExtras.filter((e) => e.name !== extra.name));
+  };
+
+  const handleChangeExtraQty = (extra, action) => {
+    const extraIndex = selectedExtras.findIndex((e) => e.name === extra.name);
+    const newSelectedExtras = [...selectedExtras];
+    if (action === "add") {
+      newSelectedExtras[extraIndex].qty = newSelectedExtras[extraIndex].qty + 1;
+    } else if (action === "remove") {
+      newSelectedExtras[extraIndex].qty = newSelectedExtras[extraIndex].qty - 1;
+    }
+    setSelectedExtras(newSelectedExtras);
+  };
+
   const cart = cartItems?.find((cart) => cart.id === id);
   const isCartAdded = cartItems?.findIndex((cart) => {
     return cart.id === id;
   });
-
-  // const cartDispatch = () => {
-  //   localStorage.setItem("cartItems", JSON.stringify(items));
-  //   dispatch({
-  //     type: actionType.SET_CARTITEMS,
-  //     cartItems: items,
-  //   });
-  // };
 
   const updateQty = (action, id) => {
     if (action === "add") {
@@ -81,7 +141,6 @@ const ProductDetails = () => {
           }
         }),
       });
-      // cartDispatch();
     } else if (action === "remove") {
       if (qty > 1) {
         setQty(qty - 1);
@@ -96,7 +155,6 @@ const ProductDetails = () => {
           }),
         });
       }
-      // cartDispatch();
     }
   };
 
@@ -104,7 +162,7 @@ const ProductDetails = () => {
     if (isCartAdded === -1) {
       return dispatch({
         type: actionType.SET_CARTITEMS,
-        cartItems: [...cartItems, { ...document, qty }],
+        cartItems: [...cartItems, { ...document, qty, selectedExtras }],
       });
     } else {
       return updateQty("add", id);
@@ -128,25 +186,96 @@ const ProductDetails = () => {
             <Title>{document.title}</Title>
             <Desc>{document.desc}</Desc>
             <Price>{document.price}</Price>
-            <FilterContainer>{/* filters /}*/} </FilterContainer>
+            <Grid container spacing={3} className={classes.extraContainer}>
+              {document.extras?.map((extra) => (
+                <Grid item xs={12} key={extra.name} className={classes.extra}>
+                   <Grid
+                    container
+                    spacing={1}
+                    alignItems="center"
+                    className={classes.extraButtonContainer}
+                  >
+                    <Grid item>
+                  <Typography variant="body2" className={classes.extraName}>
+                    {extra.name}
+                  </Typography>
+                  </Grid>
+                  <Grid item>
+                  <Typography variant="body2" className={classes.extraPrice}>
+                    ${extra.price}
+                  </Typography>
+                  </Grid>
+                 </Grid>
+                  <Grid
+                    container
+                    spacing={1}
+                    alignItems="center"
+                    className={classes.extraQtyContainer}
+                  >
+                    <Grid item>
+                      <IconButton
+                        onClick={() => handleChangeExtraQty(extra, "remove")}
+                      >
+                        <RemoveIcon />
+                      </IconButton>
+                    </Grid>
+                    <Grid item>
+                      <Typography variant="body2" className={classes.extraQty}>
+                        {selectedExtras.find((e) => e.name === extra.name)
+                          ?.qty || 0}
+                      </Typography>
+                    </Grid>
+                    <Grid item>
+                      <IconButton
+                        onClick={() => handleChangeExtraQty(extra, "add")}
+                      >
+                        <AddIcon />
+                      </IconButton>
+                    </Grid>
+                  </Grid>
+                  <Grid
+                    container
+                    spacing={1}
+                    alignItems="center"
+                    className={classes.extraButtonContainer}
+                  >
+                    <Grid item>
+                      <IconButton onClick={() => handleAddExtra(extra)}>
+                        <AddToCartIcon />
+                      </IconButton>
+                    </Grid>
+                    <Grid item>
+                      <IconButton onClick={() => handleRemoveExtra(extra)}>
+                        <RemoveFromCartIcon />
+                      </IconButton>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              ))}
+            </Grid>
             {!cart ? (
-              <button
-                type="button"
-                className="mt-5 bg-gradient-to-br from-orange-400 to-orange-500 w-full md:w-auto px-4 py-2  rounded-lg hover:shadow-lg transition-all ease-in-out duration-100"
+              <Button
+                variant="contained"
+                color="primary"
+                className="mt-5"
                 onClick={addToCart}
               >
                 BUY NOW
-              </button>
+              </Button>
             ) : (
               <AddContainer>
                 <AmountContainer>
-                  <BiMinus onClick={() => updateQty("remove", id)} />
-                  <Amount>{qty}</Amount>
-                  <BiPlus onClick={() => updateQty("add", id)} />
+                  <IconButton onClick={() => updateQty("remove", id)}>
+                    <RemoveIcon />
+                  </IconButton>
+                  <Typography variant="body2">{qty}</Typography>
+                  <IconButton onClick={() => updateQty("add", id)}>
+                    <AddIcon />
+                  </IconButton>
                 </AmountContainer>
-                {/* <Button onClick={addToCart}>
-    {isCartAdded === -1 ? "Add to Cart" : "Update Cart"}
-    </Button> */}
+                <Button variant="contained" color="primary" onClick={addToCart}>
+                  UPDATE CART
+                </Button>
               </AddContainer>
             )}
           </InfoContainer>
