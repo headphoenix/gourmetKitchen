@@ -34,9 +34,10 @@ const CreateContainer = () => {
   const [{ foodItems }, dispatch] = useStateValue();
 
   const uploadImage = (e) => {
+    console.log("Hello world")
     setIsLoading(true);
     const imageFile = e.target.files[0];
-    const storageRef = ref(storage, `Images/${Date.now()}-${imageFile.name}`);
+    const storageRef = ref(storage, `Images/${Date.now()}`);
     const uploadTask = uploadBytesResumable(storageRef, imageFile);
 
     uploadTask.on(
@@ -214,9 +215,9 @@ const CreateContainer = () => {
                     </div>
                     <input
                       type="file"
-                      name="uploadimage"
+                      name="imageAsset"
                       accept="image/*"
-                      onChange={uploadImage}
+                      onChange={(e)=>uploadImage(e)}
                       className="w-0 h-0"
                     />
                   </label>
@@ -242,7 +243,6 @@ const CreateContainer = () => {
             </>
           )}
         </div>
-
         <div className="w-full flex flex-col md:flex-row items-center gap-3">
           <div className="w-full py-2 border-b border-gray-300 flex items-center gap-2">
             <MdFoodBank className="text-gray-700 text-2xl" />

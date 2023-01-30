@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
 import {
@@ -67,6 +67,8 @@ const AddProduct = () => {
   const [extraName, setExtraName] = useState("");
   const [extraPrice, setExtraPrice] = useState(0);
 
+  const inputRef = useRef(null);
+
   const [product, setProduct] = useState(() => {
     const newState = detectForm(
       id,
@@ -105,19 +107,23 @@ const AddProduct = () => {
       }, 4000);
   
     }
-  };  
+  }; 
+  
+  const handleFileChange = () => {
+    if (inputRef.current && inputRef.current.files.length > 0) {
+        uploadImage(inputRef.current.files[0]);
+    }
+}
   
   // useEffect(() => {
   //   setProduct({ ...product, extras });
   // }, [extras]);
 
   const uploadImage = (e) => {
-    console.log("uploading image")
     setIsLoading(true);
     const imageFile = e.target.files[0];
     const storageRef = ref(storage, `Images/${Date.now()}-${imageFile.name}`);
     const uploadTask = uploadBytesResumable(storageRef, imageFile);
-
     uploadTask.on(
       "state_changed",
       (snapshot) => {
@@ -463,7 +469,7 @@ const AddProduct = () => {
             </>
           )}
         </div>
-
+         
 
         <div className="w-full h-full flex flex-col items-center gap-3">
           <div className="w-full h-200 py-2 border-b border-gray-300 flex items-center gap-2">

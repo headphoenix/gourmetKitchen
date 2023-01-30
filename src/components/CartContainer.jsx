@@ -55,47 +55,14 @@ const CartContainer = () => {
     setTot(totalPrice);
     console.log(tot);
   }, [tot, flag]);
- 
-//   const componentProps = {
-//     email,
-//     amount,
-//     currency,
-//     metadata: {
-//         name,
-//         telNumber,
-//     },
-//     publicKey,
-//     text: "Payment",
-//     onSuccess: () => {
-//         const cartItems = {
 
-//         }
-//         try {
-//             const docRef = addDoc(collection(db, "users"), memberDetails);
-//             console.log("Document written with ID: ", docRef.id);
-
-//             emailjs.sendForm('service_r5b6zar', 'template_gtcis15', form.current, 'i81xuBxQny_dCNZ8e')
-//                 .then((result) => {
-//                     console.log(result.text);
-//                 }, (error) => {
-//                     console.log(error.text);
-//                 });
-//            // alert("Thanks for registering to MOGA!!");
-//             resetFormFields();
-//         } catch (e) {
-//             console.error("Error adding document: ", e);
-//         }
-//     },
-//     onClose: () => alert("You've not registered yet"),
-// }
 
   const clearCart = () => {
     dispatch({
       type: actionType.SET_CARTITEMS,
       cartItems: [],
     });
-
-    localStorage.setItem("cartItems", JSON.stringify([]));
+    localStorage.clear();
   };
 
   return (

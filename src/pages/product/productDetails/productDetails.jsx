@@ -98,8 +98,8 @@ const ProductDetails = () => {
       return cart.id === id;
     })?.qty || 1
   );
-    
-  console.log(qty)
+
+  console.log(qty);
   const [totalPrice, setTotalPrice] = useState(document?.price || 0);
   const [selectedExtras, setSelectedExtras] = useState([]);
   const [showExtras, setShowExtras] = useState(false);
@@ -120,23 +120,15 @@ const ProductDetails = () => {
     }
   }, [cartItems, id]);
 
-  const handleAddToCart = () => {
-    setShowExtras(true);
-    setTotalPrice(document?.price);
-    dispatch({
-      type: actionType.SET_CARTITEMS,
-      cartItems: [...cartItems, { ...document, qty, selectedExtras, totalPrice }],
-    });
-}
-
   const handleAddExtra = (extra) => {
     setSelectedExtras([...selectedExtras, { ...extra, qty: 1 }]);
     setTotalPrice(totalPrice + extra.price);
+    console.log(totalPrice);
   };
 
   const handleRemoveExtra = (extra) => {
     setSelectedExtras(selectedExtras.filter((e) => e.name !== extra.name));
-    setTotalPrice(totalPrice - (extra.price * extra.qty));
+    setTotalPrice(totalPrice - extra.price * extra.qty);
   };
 
   const handleChangeExtraQty = (extra, action) => {
@@ -144,14 +136,14 @@ const ProductDetails = () => {
     const newSelectedExtras = [...selectedExtras];
     if (action === "add") {
       newSelectedExtras[extraIndex].qty = newSelectedExtras[extraIndex].qty + 1;
-      setTotalPrice(totalPrice + extra.price);
+      setTotalPrice(Number(totalPrice + extra.price));
     } else if (action === "remove") {
       newSelectedExtras[extraIndex].qty = newSelectedExtras[extraIndex].qty - 1;
-      setTotalPrice(totalPrice - extra.price);
+      setTotalPrice(Number(totalPrice - extra.price));
     }
     setSelectedExtras(newSelectedExtras);
-};
-
+    console.log(selectedExtras);
+  };
 
   const cart = cartItems?.find((cart) => cart.id === id);
   const isCartAdded = cartItems?.findIndex((cart) => {
@@ -193,7 +185,7 @@ const ProductDetails = () => {
       setIsInCart(true);
       return dispatch({
         type: actionType.SET_CARTITEMS,
-        cartItems: [...cartItems, { ...item, qty, selectedExtras, totalPrice }],
+        cartItems: [...cartItems, { ...document, qty }],
       });
     } else {
       return updateQty("add", id);
@@ -217,74 +209,88 @@ const ProductDetails = () => {
             <Title>{document.title}</Title>
             <Desc>{document.desc}</Desc>
             <Price>{document.price}</Price>
-            {isInCart && <Grid container spacing={3} className={classes.extraContainer}>
-              <h4>Here are some of the Extras you can order with this food product</h4>
-              {document.extras?.map((extra) => (
-                <Grid item xs={12} key={extra.name} className={classes.extra}>
-                   <Grid
-                    container
-                    spacing={1}
-                    alignItems="center"
-                    className={classes.extraButtonContainer}
-                  >
-                    <Grid item>
-                  <Typography variant="body2" className={classes.extraName}>
-                    {extra.name}
-                  </Typography>
+            {isInCart && (
+              <Grid container spacing={3} className={classes.extraContainer}>
+                <h4>
+                  Here are some of the Extras you can order with this food
+                  product
+                </h4>
+                {document.extras?.map((extra) => (
+                  <Grid item xs={12} key={extra.name} className={classes.extra}>
+                    <Grid
+                      container
+                      spacing={1}
+                      alignItems="center"
+                      className={classes.extraButtonContainer}
+                    >
+                      <Grid item>
+                        <Typography
+                          variant="body2"
+                          className={classes.extraName}
+                        >
+                          {extra.name}
+                        </Typography>
+                      </Grid>
+                      <Grid item>
+                        <Typography
+                          variant="body2"
+                          className={classes.extraPrice}
+                        >
+                          ${extra.price}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                    <Grid
+                      container
+                      spacing={1}
+                      alignItems="center"
+                      className={classes.extraQtyContainer}
+                    >
+                      <Grid item>
+                        <IconButton
+                          onClick={() => handleChangeExtraQty(extra, "remove")}
+                        >
+                          <RemoveIcon />
+                        </IconButton>
+                      </Grid>
+                      <Grid item>
+                        <Typography
+                          variant="body2"
+                          className={classes.extraQty}
+                        >
+                          {selectedExtras?.find((e) => e.name === extra.name)
+                            ?.qty || 0}
+                        </Typography>
+                      </Grid>
+                      <Grid item>
+                        <IconButton
+                          onClick={() => handleChangeExtraQty(extra, "add")}
+                        >
+                          <AddIcon />
+                        </IconButton>
+                      </Grid>
+                    </Grid>
+                    <Grid
+                      container
+                      spacing={1}
+                      alignItems="center"
+                      className={classes.extraButtonContainer}
+                    >
+                      <Grid item>
+                        <IconButton onClick={() => handleAddExtra(extra)}>
+                          <AddToCartIcon />
+                        </IconButton>
+                      </Grid>
+                      <Grid item>
+                        <IconButton onClick={() => handleRemoveExtra(extra)}>
+                          <RemoveFromCartIcon />
+                        </IconButton>
+                      </Grid>
+                    </Grid>
                   </Grid>
-                  <Grid item>
-                  <Typography variant="body2" className={classes.extraPrice}>
-                    ${extra.price}
-                  </Typography>
-                  </Grid>
-                 </Grid>
-                  <Grid
-                    container
-                    spacing={1}
-                    alignItems="center"
-                    className={classes.extraQtyContainer}
-                  >
-                    <Grid item>
-                      <IconButton
-                        onClick={() => handleChangeExtraQty(extra, "remove")}
-                      >
-                        <RemoveIcon />
-                      </IconButton>
-                    </Grid>
-                    <Grid item>
-                      <Typography variant="body2" className={classes.extraQty}>
-                        {selectedExtras.find((e) => e.name === extra.name)
-                          ?.qty || 0}
-                      </Typography>
-                    </Grid>
-                    <Grid item>
-                      <IconButton
-                        onClick={() => handleChangeExtraQty(extra, "add")}
-                      >
-                        <AddIcon />
-                      </IconButton>
-                    </Grid>
-                  </Grid>
-                  <Grid
-                    container
-                    spacing={1}
-                    alignItems="center"
-                    className={classes.extraButtonContainer}
-                  >
-                    <Grid item>
-                      <IconButton onClick={() => handleAddExtra(extra)}>
-                        <AddToCartIcon />
-                      </IconButton>
-                    </Grid>
-                    <Grid item>
-                      <IconButton onClick={() => handleRemoveExtra(extra)}>
-                        <RemoveFromCartIcon />
-                      </IconButton>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              ))}
-            </Grid>}
+                ))}
+              </Grid>
+            )}
             {!cart ? (
               <Button
                 variant="contained"
@@ -305,9 +311,6 @@ const ProductDetails = () => {
                     <AddIcon />
                   </IconButton>
                 </AmountContainer>
-                <Button variant="contained" color="primary" onClick={addToCart}>
-                  UPDATE CART
-                </Button>
               </AddContainer>
             )}
           </InfoContainer>

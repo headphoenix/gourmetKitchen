@@ -332,3 +332,23 @@ export const Toast = styled(
     width: 250px;
     `}
     } `;
+
+  export const DetailsContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+  ${({ theme }) => css`
+    @media (max-width: 1024px) {
+      flex-wrap: nowrap;
+    }
+  `}
+`;
+
+
+
+    
+
+    
