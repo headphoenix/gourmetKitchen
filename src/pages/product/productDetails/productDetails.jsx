@@ -89,28 +89,27 @@ const ProductDetails = () => {
   const { item } = location.state || {};
   const { id } = useParams();
   const [isInCart, setIsInCart] = useState(false);
-
   const [{ cartItems }, dispatch] = useStateValue();
   const { document } = useFetchDocument("foodItems", id);
-
+ 
   const [qty, setQty] = useState(
-    cartItems?.find((cart) => {
+    (cartItems?.find((cart) => {
       return cart.id === id;
-    })?.qty || 1
+    })?.qty) || 1
   );
 
-  console.log(qty);
+
   const [totalPrice, setTotalPrice] = useState(document?.price || 0);
   const [selectedExtras, setSelectedExtras] = useState([]);
   const [showExtras, setShowExtras] = useState(false);
-
   const classes = useStyles();
   const theme = useTheme();
   const isDownSm = useMediaQuery(theme.breakpoints.down("sm"));
 
+
   useEffect(() => {
     if (cartItems) {
-      const cartProduct = cartItems.find((cart) => cart.id === id);
+      const cartProduct = cartItems?.find((cart) => cart.id === id);
       if (cartProduct) {
         setIsInCart(true);
         setSelectedExtras(cartProduct.selectedExtras);
@@ -120,77 +119,239 @@ const ProductDetails = () => {
     }
   }, [cartItems, id]);
 
-  const handleAddExtra = (extra) => {
-    setSelectedExtras([...selectedExtras, { ...extra, qty: 1 }]);
-    setTotalPrice(totalPrice + extra.price);
-    console.log(totalPrice);
+
+  const handleAddToCart = () => {
+    if (qty > 0) {
+      setShowExtras(true);
+      let productTotalPrice = document?.price * qty;
+      selectedExtras.forEach((extra) => {
+        productTotalPrice += Number(extra.price) * extra.qty;
+      });
+      dispatch({
+        type: actionType.SET_CARTITEMS,
+        cartItems: [
+          ...cartItems.filter(cart => cart.id !== id),
+          { ...document, qty, selectedExtras, totalPrice: productTotalPrice },
+        ],
+      });
+    }
+  };
+ 
+
+
+  const handleChangeQty = (value) => {
+    if (value > 0) {
+      setQty(value);
+    }
   };
 
+
+
+
+  const handleAddExtra = (extra) => {
+    const existingExtra = selectedExtras.find(e => e.name === extra.name);
+    if (!existingExtra) {
+      setSelectedExtras([...selectedExtras, { ...extra, qty: 1 }]);
+    } else {
+      setSelectedExtras(
+        selectedExtras.map(e =>
+          e.name === extra.name ? { ...e, qty: e.qty + 1 } : e
+        )
+      );
+    }
+  };  
+ 
+ 
   const handleRemoveExtra = (extra) => {
     setSelectedExtras(selectedExtras.filter((e) => e.name !== extra.name));
-    setTotalPrice(totalPrice - extra.price * extra.qty);
   };
+ 
+//   const handleExtraQtyChange = (extra, value) => {
+//     setSelectedExtras(
+//       selectedExtras.map((e) => {
+//         if (e.name === extra.name) {
+//           return { ...e, qty: Number(value) };
+//         }
+//         return e;
+//       })
+//     );
+//   };
+ 
+ 
+ 
+// const handleChangeExtraQty = (extra, action) => {
+//   setSelectedExtras(
+//     selectedExtras.map((e) => {
+//       if (e.name === extra.name) {
+//         return {
+//           ...e,
+//           qty: action === "add" ? e.qty + 1 : Math.max(0, e.qty - 1),
+//         };
+//       }
+//       return e;
+//     })
+//   );
+// };
 
-  const handleChangeExtraQty = (extra, action) => {
-    const extraIndex = selectedExtras.findIndex((e) => e.name === extra.name);
-    const newSelectedExtras = [...selectedExtras];
-    if (action === "add") {
-      newSelectedExtras[extraIndex].qty = newSelectedExtras[extraIndex].qty + 1;
-      setTotalPrice(Number(totalPrice + extra.price));
-    } else if (action === "remove") {
+
+// const handleAddExtra = (extra) => {
+//   setSelectedExtras([...selectedExtras, { ...extra, qty: 1 }]);
+//   setTotalPrice(totalPrice + extra.price);
+//   console.log(totalPrice);
+// };
+
+
+// const handleRemoveExtra = (extra) => {
+//   setSelectedExtras(selectedExtras.filter((e) => e.name !== extra.name));
+//   setTotalPrice(totalPrice - extra.price * extra.qty);
+// };
+
+
+const handleChangeExtraQty = (extra, action) => {
+  const extraIndex = selectedExtras.findIndex((e) => e.name === extra.name);
+  const newSelectedExtras = [...selectedExtras];
+  if (action === "add") {
+    newSelectedExtras[extraIndex].qty = newSelectedExtras[extraIndex].qty + 1;
+    setTotalPrice(Number(totalPrice) + Number(extra.price));
+  } else if (action === "remove") {
+    if (newSelectedExtras[extraIndex].qty > 0) {
       newSelectedExtras[extraIndex].qty = newSelectedExtras[extraIndex].qty - 1;
-      setTotalPrice(Number(totalPrice - extra.price));
+      setTotalPrice(Number(totalPrice) - Number(extra.price));
     }
-    setSelectedExtras(newSelectedExtras);
-    console.log(selectedExtras);
-  };
+  }
+  setSelectedExtras(newSelectedExtras);
+};
+
+
+  useEffect(() => {
+    setTotalPrice(
+      document?.price * qty +
+        selectedExtras.reduce((acc, extra) => acc + Number(extra.price) * extra.qty, 0)
+    );
+    return dispatch({
+      type: actionType.SET_CARTITEMS,
+      cartItems: cartItems.map((item) => {
+        if (item.id === id) {
+          return {
+            ...item,
+            totalPrice,
+            selectedExtras
+          };
+        }
+        return item;
+      }),
+    });
+
+
+  }, [document, qty, selectedExtras]);
+ 
 
   const cart = cartItems?.find((cart) => cart.id === id);
   const isCartAdded = cartItems?.findIndex((cart) => {
     return cart.id === id;
   });
 
+
+  const cartDispatch = () => {
+    localStorage.setItem("cartItems", JSON.stringify(items));
+    dispatch({
+      type: actionType.SET_CARTITEMS,
+      cartItems: items,
+    });
+  };
+
+
   const updateQty = (action, id) => {
     if (action === "add") {
       setQty(qty + 1);
+       let newTotalPrice = document?.price;
+      const updatedExtras = selectedExtras.map((extra) => {
+        return { ...extra, qty: extra.qty};
+      });
+      updatedExtras.forEach((extra) => {
+        newTotalPrice += Number(extra.price) * extra.qty;
+      });
+      setSelectedExtras(updatedExtras);
+      setTotalPrice(newTotalPrice);
       return dispatch({
         type: actionType.SET_CARTITEMS,
         cartItems: cartItems.map((item) => {
           if (item.id === id) {
-            return { ...item, qty: item.qty + 1 };
-          } else {
-            return item;
+            return {
+              ...item,
+              qty: item.qty + 1,
+              totalPrice: newTotalPrice,
+              selectedExtras: updatedExtras,
+            };
           }
+          return item;
         }),
       });
     } else if (action === "remove") {
       if (qty > 1) {
         setQty(qty - 1);
+        let newTotalPrice = document?.price;
+        const updatedExtras = selectedExtras.map((extra) => {
+          return { ...extra, qty: extra.qty };
+        });
+        updatedExtras.forEach((extra) => {
+          newTotalPrice += Number(extra.price) * extra.qty;
+        });
+        setSelectedExtras(updatedExtras);
+        setTotalPrice(newTotalPrice);
         return dispatch({
           type: actionType.SET_CARTITEMS,
           cartItems: cartItems.map((item) => {
             if (item.id === id) {
-              return { ...item, qty: item.qty - 1 };
-            } else {
-              return item;
+              return {
+                ...item,
+                qty: item.qty - 1,
+                totalPrice: newTotalPrice,
+                selectedExtras: updatedExtras,
+              };
             }
+            return item;
           }),
+        });
+      } else {
+        return dispatch({
+          type: actionType.SET_CARTITEMS,
+          cartItems: cartItems.filter((item) => item.id !== id),
         });
       }
     }
   };
+
+
+  useEffect(() => {
+    items = cartItems;
+  }, [qty, items]);
+
+
+  console.log("Total price: " + totalPrice);
+  console.log(selectedExtras)
+
 
   const addToCart = () => {
     if (!isInCart) {
       setIsInCart(true);
       return dispatch({
         type: actionType.SET_CARTITEMS,
-        cartItems: [...cartItems, { ...document, qty }],
+        cartItems: [...cartItems, { ...item, qty, selectedExtras, totalPrice }],
       });
-    } else {
-      return updateQty("add", id);
     }
+    return;
   };
+
+
+  const removeFromCart = (id) => {
+    setIsInCart(false);
+    return dispatch({
+      type: actionType.SET_CARTITEMS,
+      cartItems: cartItems.filter((item) => item.id !== id),
+    });
+  };
+
 
   return (
     <Container>
