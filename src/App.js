@@ -11,7 +11,7 @@ import CheckoutDetails from "./pages/checkout/CheckoutDetails";
 import Map from "./pages/checkout/Maps"
 import Checkout from "./pages/checkout/Checkout";
 import OrderHistory from "./pages/orderHistory/OrderHistory";
-import OrderDetails from "./pages/orderDetails/OrderDetails.jsx";
+// import OrderDetails from "./pages/orderDetails/OrderDetails.jsx";
 import Menu from "./pages/menu";
 
 
@@ -64,7 +64,7 @@ const App = () => {
             <Route path="/carts" element={<Carts />} />
             <Route path="/checkout-details" element={<CheckoutDetails />} />
             <Route path="/order-history" element={<OrderHistory />} />
-            <Route path="/order-details/:id" element={<OrderDetails />} />
+            {/* <Route path="/order-details/:id" element={<OrderDetails />} /> */}
             <Route path="/map" element={<Map />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/menu" element={<Menu />} />
