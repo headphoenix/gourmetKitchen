@@ -1,5 +1,5 @@
 import { doc, getDoc } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { firestore } from "../../../firebase.config";
@@ -107,7 +107,15 @@ const ProductDetails = () => {
   const isDownSm = useMediaQuery(theme.breakpoints.down("sm"));
 
 
-  useEffect(() => {
+  const extrasPrice = useMemo(() => {
+    let productTotalPrice = 0;
+    selectedExtras.forEach((extra) => {
+      productTotalPrice += Number(extra.price) * extra.qty;
+    });
+    return productTotalPrice;
+  }, [selectedExtras]);
+
+useEffect(() => {
     if (cartItems) {
       const cartProduct = cartItems?.find((cart) => cart.id === id);
       if (cartProduct) {

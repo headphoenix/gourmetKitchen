@@ -11,7 +11,7 @@ import CheckoutDetails from "./pages/checkout/CheckoutDetails";
 import Map from "./pages/checkout/Maps"
 import Checkout from "./pages/checkout/Checkout";
 import OrderHistory from "./pages/orderHistory/OrderHistory";
-import OrderDetails from "./pages/orderDetails/OrderDetails";
+import OrderDetails from "./pages/orderDetails/OrderDetails.jsx";
 import Menu from "./pages/menu";
 
 
